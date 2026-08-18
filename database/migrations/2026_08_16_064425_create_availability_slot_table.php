@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('availability_slot', function (Blueprint $table) {
-            $table->id('slot_id');
-            $table->foreignId('unit_id')->constrained('units', 'id')->cascadeOnDelete();
+            $table->id();
+            $table->foreignId('unit_id')->constrained()->cascadeOnDelete();
             $table->dateTime('start_datetime');
             $table->dateTime('end_datetime');
             $table->enum('status', ['available', 'blocked', 'booked']);

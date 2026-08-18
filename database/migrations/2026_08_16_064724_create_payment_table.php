@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payment', function (Blueprint $table) {
-            $table->id('payment_id');
-            $table->foreignId('booking_id')->constrained('booking', 'id')->cascadeOnDelete();
+            $table->id();
+            $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
             $table->decimal('amount');
             $table->string('payment_method');
             $table->string('payment_image_url');

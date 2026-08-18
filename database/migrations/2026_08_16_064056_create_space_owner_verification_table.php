@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('space_owner_verification', function (Blueprint $table) {
-            $table->id('verification_id');
-            $table->foreignId('owner_id')->constrained('users', 'id')->cascadeOnDelete();
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('proof_document_url');
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreignId('reviewed_by')->nullable()->constrained('users', 'id')->nullOnDelete();
