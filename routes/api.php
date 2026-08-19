@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register/space-owner', [AuthController::class, 'registerSpaceOwnerAccount']);
-Route::post('/register/coustomer', [AuthController::class, 'registerCustomerAccount']);
+Route::post('/register/customer', [AuthController::class, 'registerCustomerAccount']);
 Route::get('/login', [AuthController::class, 'loginAccount']);
 
 Route::middleware('auth:sanctum')->group(function() {
