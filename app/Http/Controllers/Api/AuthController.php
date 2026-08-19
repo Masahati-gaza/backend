@@ -10,67 +10,111 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function registerSpaceOwnerAccount(Request $request)
     {
         $request->validate([
-            'full_name'=>'required|string',
-            'phone'=>'required|numeric',
-            'email'=>'required|email|unique:users,email',
-            'profile_picture'=>'nullable|image',
-            'password'=>'requird',
+            'full_name' => 'required|string',
+            'phone' => 'required|numeric',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+            'proof_document' => 'required|file'
         ]);
-        $request->merge([
-            'password'=>bcrypt($request->password)
-        ]);
-        if($request->hasFile('profile_picture')) {
-            $file = $request->file('profile_picture');
+        if ($request->hasFile('proof_document')) {
+            $file = $request->file('proof_document');
             $path = $file->store('/picture', 'public');
-            $request->merge([
-                'profile_picture_url' => $path
+
+            $user = User::create([
+                'full_name' => $request->full_name,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role' => 'space_owner',
+                'proof_document_url' => $path,
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
 
-        $user = User::create($request->all());
-
         return response()->json([
-            'user'=>$user,
-            'status'=>201,
-            'message'=>'user registered successfully'
+            'user' => $user,
+            'status' => 201,
+            'message' => 'space owner registered successfully'
         ]);
-
     }
 
-    public function login(Request $request)
+    public function registerCustomerAccount(Request $request)
     {
         $request->validate([
-            'email'=>'required|email',
-            'password'=>'required'
+            'full_name' => 'required|string',
+            'phone' => 'required|numeric',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+        ]);
+
+        $user = User::create([
+            'full_name' => $request->full_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'customer',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'user' => $user,
+            'status' => 201,
+            'message' => 'customer registered successfully'
+        ]);
+    }
+    public function loginAccount(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
 
         $user = User::where('email', $request->email)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json('invalid credentials', 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json('Invalid credentials', 401);
         }
 
-        
+
         $token = $user->createToken('remember_token')->plainTextToken;
 
         return response()->json([
-            'user'=>$user,
-            'token'=>$token,
-            'message'=>'logged in'
+            'user' => $user,
+            'token' => $token,
+            'message' => 'logged in'
         ]);
-
-
     }
 
-    public function logout(Request $request)
+    public function accountDetails(Request $request)
+    {
+        return $request->user();
+    }
+
+    public function logoutAccount(Request $request)
     {
         $request->user()->tokens()->delete();
         return response()->json([
-            'message'=>'logged out successfully'
+            'message' => 'logged out successfully'
+        ]);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $user = $request->user();
+        User::deleteProofDocument($user->proof_document_url);
+        $user->tokens()->delete();
+        $user->delete();
+        return response()->json([
+            'message' => 'user deleted successfully',
+            'status' => 201
         ]);
     }
 }

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('phone');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['customer', 'space_owner', 'admin'])->default('customer');
+            $table->enum('role', ['customer', 'space_owner', 'admin']);
+            $table->string('proof_document_url')->nullable();
             $table->string('profile_picture_url')->nullable();
-            $table->enum('status', ['pending', 'active', 'suspended'])->default('pending');
+            $table->enum('status', ['pending', 'active', 'suspended']);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -3,13 +3,13 @@
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::get('/login', [AuthController::class, 'login']);
+Route::post('/register/space-owner', [AuthController::class, 'registerSpaceOwnerAccount']);
+Route::post('/register/coustomer', [AuthController::class, 'registerCustomerAccount']);
+Route::get('/login', [AuthController::class, 'loginAccount']);
 
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('/user-details', function(){
-        echo "user details";
-    });
+    Route::get('/user-details', [AuthController::class, 'accountdetails']);
 
-    Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/logout', [AuthController::class, 'logoutAccount']);
+    Route::delete('/delete-user', [AuthController::class, 'deleteAccount']);
 });

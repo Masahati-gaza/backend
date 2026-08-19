@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -24,8 +25,18 @@ class User extends Authenticatable
         'phone',
         'email',
         'password',
+        'role',
+        'proof_document_url',
+        'profile_picture_url',
+        'status'
     ];
 
+    public static function deleteProofDocument($path)
+    {
+        if($path && Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->delete($path);
+        }
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
